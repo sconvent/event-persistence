@@ -65,26 +65,38 @@ if(httpEnabled) {
     app.use(bodyParser.json());
 
     app.post('/data', async (req: Request, res: Response) => {
+        try {
+            
         console.log(`POST /data called with body: ${JSON.stringify(req.body)} and query: ${JSON.stringify(req.query)}`);
         // check if all required fields are present
         let missingFields = false;
         for (const field of httpJsonFields.split(",")) {
-            if (!(field in req.body)) {
+            if (field != "" && !(field in req.body)) {
                 console.log(`Required field ${field} is missing`);
                 missingFields = true;
             }
         }
         if (!missingFields) {
             console.log("All required fields are present, adding to db");
+            var row = [];
+            for (const key of httpJsonFields.split(",")) {
+                //console.log(`${key}: ${req.body[key]}`);    
+                row.push(req.body[key]);
+            }
+            var values_string = "";
+            for (var i = 1; i <= httpJsonFields.split(",").length; i++) {
+                values_string += "$" + i + ",";
+            }
+            values_string = values_string.slice(0, -1);
+            await client.query(`INSERT INTO ${dbTable}(${httpJsonFields}) VALUES(${values_string})`, row);
             
-            //console.log(`Inserted ${JSON.stringify(rows)} into db`);
+            console.log(`Inserted entry into db`);
         }
 
-        // insert into db
-        // const { rows } = await pool.query('INSERT INTO users(name) VALUES($1) RETURNING *', ['brianc']);
-        //pool.
-        //const { rows } = await pool.query('SELECT * FROM users');
-        //res.send(rows);
+        } catch(err) {
+            console.log(`An error occured: ${err}`);
+        };
+
 
         // set return code
         res.status(200).send("OK");
