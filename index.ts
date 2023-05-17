@@ -1,4 +1,4 @@
-//import * as mqtt from "mqtt"
+import * as mqtt from "mqtt"
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import pkg from 'pg';
@@ -42,17 +42,14 @@ const client = new Client({
 
 
 if(mqttEnabled) {
-    /*
-    const client = mqtt.connect("mqtt://localhost:1883")
+    const client = mqtt.connect(`mqtt://${mqttHost}:${mqttPort}`)
     // callbacks
     client.on("connect", () => {
         console.log("Connected")
         mqttTopics.split(",").forEach((topic) => {
             client.subscribe(topic)
         })
-    })
-    */
-    
+    })   
 }
 
 if(httpEnabled) {
@@ -65,40 +62,44 @@ if(httpEnabled) {
     app.use(bodyParser.json());
 
     app.post('/data', async (req: Request, res: Response) => {
-        try {
-            
-        console.log(`POST /data called with body: ${JSON.stringify(req.body)} and query: ${JSON.stringify(req.query)}`);
-        // check if all required fields are present
-        let missingFields = false;
-        for (const field of httpJsonFields.split(",")) {
-            if (field != "" && !(field in req.body)) {
-                console.log(`Required field ${field} is missing`);
-                missingFields = true;
-            }
-        }
-        if (!missingFields) {
-            console.log("All required fields are present, adding to db");
-            var row = [];
-            for (const key of httpJsonFields.split(",")) {
-                //console.log(`${key}: ${req.body[key]}`);    
-                row.push(req.body[key]);
-            }
-            var values_string = "";
-            for (var i = 1; i <= httpJsonFields.split(",").length; i++) {
-                values_string += "$" + i + ",";
-            }
-            values_string = values_string.slice(0, -1);
-            await client.query(`INSERT INTO ${dbTable}(${httpJsonFields}) VALUES(${values_string})`, row);
-            
-            console.log(`Inserted entry into db`);
-        }
 
-        } catch(err) {
-            console.log(`An error occured: ${err}`);
-        };
-
+        handleEvent({}, req.body)
 
         // set return code
         res.status(200).send("OK");
     });
+}
+
+const handleEvent = async (metaData: any, data: any) => {
+    console.log(`Received event: ${data}`);
+
+    try {
+    // check if all required fields are present
+    let missingFields = false;
+    for (const field of httpJsonFields.split(",")) {
+        if (field != "" && !(field in data)) {
+            console.log(`Required field ${field} is missing`);
+            missingFields = true;
+        }
+    }
+    if (!missingFields) {
+        console.log("All required fields are present, adding to db");
+        var row = [];
+        for (const key of httpJsonFields.split(",")) {
+            //console.log(`${key}: ${req.body[key]}`);    
+            row.push(data[key]);
+        }
+        var values_string = "";
+        for (var i = 1; i <= httpJsonFields.split(",").length; i++) {
+            values_string += "$" + i + ",";
+        }
+        values_string = values_string.slice(0, -1);
+        await client.query(`INSERT INTO ${dbTable}(${httpJsonFields}) VALUES(${values_string})`, row);
+        
+        console.log(`Inserted entry into db`);
+    }
+
+    } catch(err) {
+        console.log(`An error occured: ${err}`);
+    };
 }
