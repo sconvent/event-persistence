@@ -6,6 +6,7 @@
   "author": "Simon Convent <simon@convnet.de>",
   "license": "Unlicense",
   "type": "module",
+  "moduleResolution": "Node16",
   "scripts": {
     "dev": "npx tsc && node index.js",
     "serve": "npx tsc && node index.js"
