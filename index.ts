@@ -1,4 +1,4 @@
-import * as mqtt from "mqtt"
+import mqtt from 'mqtt';
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import pkg from 'pg';
@@ -7,8 +7,8 @@ const app: Application = express();
 
 // Define all MQTT environment variables needed
 const mqttEnabled = process.env.MQTT_ENABLED == "true" || false
-const mqttHost = process.env.MQTT_HOST
-const mqttPort = process.env.MQTT_PORT
+const mqttHost = process.env.MQTT_HOST || "localhost"
+const mqttPort = process.env.MQTT_PORT || 1883
 const mqttUser = process.env.MQTT_USER
 const mqttPassword = process.env.MQTT_PASSWORD
 const mqttTopics: string = process.env.MQTT_TOPICS || ""
@@ -42,14 +42,23 @@ const client = new Client({
 
 
 if(mqttEnabled) {
-    const client = mqtt.connect(`mqtt://${mqttHost}:${mqttPort}`)
+    console.log("Starting MQTT client")
+    let client = mqtt.connect(`mqtt://${mqttHost}:${mqttPort}`)
     // callbacks
     client.on("connect", () => {
         console.log("Connected")
         mqttTopics.split(",").forEach((topic) => {
             client.subscribe(topic)
         })
-    })   
+    })
+
+    client.on("error", (error) => {
+        console.log(`Error: ${error}`)
+    })
+
+    client.on("message", (topic, message) => {
+        handleEvent({topic: topic}, JSON.parse(message.toString()))
+    })
 }
 
 if(httpEnabled) {
