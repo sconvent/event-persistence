@@ -1,18 +1,9 @@
-import mqtt from 'mqtt';
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import pkg from 'pg';
 const { Client } = pkg;
 const app: Application = express();
-
-// Define all MQTT environment variables needed
-const mqttEnabled = process.env.MQTT_ENABLED == "true" || false
-const mqttHost = process.env.MQTT_HOST || "localhost"
-const mqttPort = process.env.MQTT_PORT || 1883
-const mqttUser = process.env.MQTT_USER || undefined
-const mqttPassword = process.env.MQTT_PASSWORD
-const mqttTopics: string = process.env.MQTT_TOPICS || ""
-const mqttClientId = process.env.MQTT_CLIENT_ID
+import { setupMqtt } from './Mqtt.js';
 
 // Define all HTTP environment variables needed
 const httpEnabled = process.env.HTTP_ENABLED == "true" || false
@@ -31,6 +22,7 @@ const dbPassword = process.env.DB_PASSWORD  || "postgres"
 const dbDatabase = process.env.DB_DATABASE  || "postgres"
 const dbTable = process.env.DB_TABLE || "data"
 
+setupMqtt()
 
 const client = new Client({
   host: dbHost,
@@ -39,28 +31,6 @@ const client = new Client({
   user: dbUser,
   password: dbPassword,
 });
-
-
-if(mqttEnabled) {
-    console.log("Starting MQTT client")
-    let client = mqtt.connect(`mqtt://${mqttHost}:${mqttPort}`, {username: mqttUser, password: mqttPassword, clientId: mqttClientId})
-    // callbacks
-    client.on("connect", () => {
-        console.log("Connected")
-        mqttTopics.split(",").forEach((topic) => {
-            client.subscribe(topic)
-        })
-    })
-
-    client.on("error", (error) => {
-        console.log(`Error: ${error}`)
-    })
-
-    client.on("message", (topic, message) => {
-        console.log(`Received message on topic ${topic}: ${message.toString()}`)
-        handleEvent({topic: topic}, JSON.parse(message.toString()))
-    })
-}
 
 if(httpEnabled) {
     await client.connect();
