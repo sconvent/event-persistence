@@ -9,7 +9,7 @@ const mqttPassword = process.env.MQTT_PASSWORD
 const mqttTopics: string = process.env.MQTT_TOPICS || ""
 const mqttClientId = process.env.MQTT_CLIENT_ID
 
-export function setupMqtt() {
+export function setupMqtt(handleEvent: any) {
   if(mqttEnabled) {
       console.log("Starting MQTT client")
       let client = mqtt.connect(`mqtt://${mqttHost}:${mqttPort}`, {username: mqttUser, password: mqttPassword, clientId: mqttClientId})
@@ -27,6 +27,7 @@ export function setupMqtt() {
   
       client.on("message", (topic, message) => {
           console.log(`Received message on topic ${topic}: ${message.toString()}`)
+          handleEvent({topic: topic}, JSON.parse(message.toString())
           //handleEvent({topic: topic}, JSON.parse(message.toString()))
       })
   }

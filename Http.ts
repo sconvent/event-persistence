@@ -11,7 +11,7 @@ const httpUser = process.env.HTTP_USER
 const httpPassword = process.env.HTTP_PASSWORD
 
 
-export async function setupHttp() {
+export async function setupHttp(handleEvent: any) {
 
     const app: Application = express();
     if(httpEnabled) {
@@ -24,7 +24,7 @@ export async function setupHttp() {
     
         app.post('/data', async (req: Request, res: Response) => {
     
-            //handleEvent({}, req.body)
+            handleEvent({}, req.body)
     
             // set return code
             res.status(200).send("OK");
