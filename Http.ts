@@ -3,27 +3,26 @@ import bodyParser from 'body-parser';
 
 // Define all HTTP environment variables needed
 const httpEnabled = process.env.HTTP_ENABLED == "true" || false
-const httpHost = process.env.HTTP_HOST
-const httpPort = process.env.HTTP_PORT
-const httpPath = process.env.HTTP_PATH
+const httpPort = process.env.HTTP_PORT || 8080
+const httpPath = process.env.HTTP_PATH || "/data"
 const httpJsonFields = process.env.HTTP_JSON_FIELDS || ""
-const httpUser = process.env.HTTP_USER
-const httpPassword = process.env.HTTP_PASSWORD
-
+const httpBasicAuthEnabled = process.env.HTTP_BASIC_AUTH_ENABLED == "true" || false
+const httpBasicAuthUser = process.env.HTTP_USER
+const httpBasicAuthPassword = process.env.HTTP_PASSWORD
 
 export async function setupHttp(handleEvent: any) {
 
     const app: Application = express();
     if(httpEnabled) {
     
-        app.listen(8080, () => {
-            console.log('Server is listening on port 8080!');
+        app.listen(httpPort, () => {
+            console.log(`Server is listening on port ${httpPort}`);
         });
     
-        app.use(bodyParser.json());
+        app.use(bodyParser.text());
     
-        app.post('/data', async (req: Request, res: Response) => {
-    
+        app.post(httpPath, async (req: Request, res: Response) => {
+
             handleEvent({}, req.body)
     
             // set return code
