@@ -19,7 +19,7 @@ export async function setupHttp(handleEvent: any) {
             console.log(`Server is listening on port ${httpPort}`);
         });
     
-        app.use(bodyParser.text());
+        app.use(bodyParser.text({ type: 'application/json' }));
     
         app.post(httpPath, async (req: Request, res: Response) => {
 

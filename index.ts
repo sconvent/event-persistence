@@ -7,8 +7,10 @@ const jsonFields = process.env.JSON_FIELDS || ""
 const handleEvent = async (metaData: any, data: any) => {
     console.log(`Received event: ${data}`);
 
+    let parsedData = JSON.parse(data);
+
     // write to postgres
-    writeToPostgres(jsonFields.split(","), data);
+    writeToPostgres(jsonFields.split(","), parsedData);
 }
 
 setupPostgres()
