@@ -14,10 +14,10 @@ RUN yarn install --production=true
 COPY . .
 
 # Build the TypeScript source code
-# RUN yarn build
+RUN yarn build
 
 # Expose port 8080 for the server to listen on
 EXPOSE 8080
 
 # Set the command to run when the container starts
-CMD ["yarn", "run", "serve"]
+CMD ["yarn", "start"]
