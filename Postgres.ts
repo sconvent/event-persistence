@@ -17,23 +17,41 @@ const client = new Client({
     password: dbPassword,
 });
 
-export function setupPostgres() {
+var fields: string[] = [];
+var query: string = "";
+
+export async function setupPostgres() {
     client.connect()
+        .then(() => console.log("Connected to Postgres"))
+        .catch((err) => console.log(`Error connecting to Postgres: ${err}`));
+    await client.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1;`, [dbTable])
+        .then((res) => {
+            fields = res.rows.map((row) => row.column_name).filter((field) => field != "id");
+            console.log(fields);
+        })
+        .catch((err) => console.log(`Error getting columns from Postgres: ${err}`));
+    var values_string = "";
+    for (var i = 1; i <= fields.length; i++) {
+        values_string += "$" + i + ",";
+    }
+    query = `INSERT INTO ${dbTable}(${fields.join(",")}) VALUES(${values_string.slice(0, -1)})`;
+    console.log(query);
 }
 
-export async function writeToPostgres(fields: string[], data: any) {
+export async function writeToPostgres(requestfields: string[], data: any) {
     try {
         var row = [];
+        console.log(fields)
+        // make all fields lowercase
+        for (const key in data) {
+            data[key.toLowerCase()] = data[key]
+        }
         for (const key of fields) {
-            //console.log(`${key}: ${req.body[key]}`);    
+            console.log(`${key}: ${data[key]}`);    
             row.push(data[key]);
         }
-        var values_string = "";
-        for (var i = 1; i <= fields.length; i++) {
-            values_string += "$" + i + ",";
-        }
-        values_string = values_string.slice(0, -1);
-        await client.query(`INSERT INTO ${dbTable}(${fields.join(",")}) VALUES(${values_string})`, row);
+        console.log(row);
+        await client.query(query, row);
 
         console.log(`Inserted entry into db`);
 
