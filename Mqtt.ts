@@ -41,7 +41,7 @@ export function setupMqtt(handleEvent: any) {
 
         client.on("message", (topic, message) => {
             console.log(`Received message on topic ${topic}: ${message.toString()}`)
-            handleEvent({ topic: topic }, JSON.parse(message.toString()))
+            handleEvent({ topic: topic }, message.toString())
         })
     }
 }
