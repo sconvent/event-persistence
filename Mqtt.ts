@@ -4,15 +4,16 @@ import mqtt from 'mqtt';
 const mqttEnabled = process.env.MQTT_ENABLED == "true" || false
 const mqttHost = process.env.MQTT_HOST || "localhost"
 const mqttPort = process.env.MQTT_PORT || 1883
+const mqttProtocolVersion = parseInt(process.env.MQTT_PROTOCOL_VERSION || "4")
 const mqttUser = process.env.MQTT_USER || undefined
-const mqttPassword = process.env.MQTT_PASSWORD
+const mqttPassword = process.env.MQTT_PASSWORD || undefined
 const mqttTopics: string | undefined = process.env.MQTT_TOPICS || undefined
 const mqttClientId = process.env.MQTT_CLIENT_ID
 
 export function setupMqtt(handleEvent: any) {
     if (mqttEnabled) {
         console.log("Starting MQTT client")
-        let client = mqtt.connect(`mqtt://${mqttHost}:${mqttPort}`, { username: mqttUser, password: mqttPassword, clientId: mqttClientId })
+        let client = mqtt.connect(`mqtt://${mqttHost}:${mqttPort}`, { username: mqttUser, password: mqttPassword, clientId: mqttClientId, protocolVersion: mqttProtocolVersion })
 
         // callbacks
         client.on("connect", () => {
