@@ -5,10 +5,9 @@ import bodyParser from 'body-parser';
 const httpEnabled = process.env.HTTP_ENABLED == "true" || false
 const httpPort = process.env.HTTP_PORT || 8080
 const httpPath = process.env.HTTP_PATH || "/data"
-const httpJsonFields = process.env.HTTP_JSON_FIELDS || ""
-const httpBasicAuthEnabled = process.env.HTTP_BASIC_AUTH_ENABLED == "true" || false
-const httpBasicAuthUser = process.env.HTTP_USER
-const httpBasicAuthPassword = process.env.HTTP_PASSWORD
+const httpTokenAuthEnabled = process.env.HTTP_TOKEN_AUTH_ENABLED == "true" || false
+const httpTokenHeaderName = process.env.HTTP_TOKEN_HEADER_NAME || "X-Auth-Token"
+const httpTokenSecret = process.env.HTTP_TOKEN_SECRET || "secret"
 
 export async function setupHttp(handleEvent: any) {
 
@@ -22,6 +21,14 @@ export async function setupHttp(handleEvent: any) {
         app.use(bodyParser.text({ type: 'application/json' }));
     
         app.post(httpPath, async (req: Request, res: Response) => {
+            // check token
+            if (httpTokenAuthEnabled) {
+                const token = req.header(httpTokenHeaderName);
+                if (token != httpTokenSecret) {
+                    res.status(401).send("Unauthorized");
+                    return;
+                }
+            }
 
             handleEvent({}, req.body)
     
