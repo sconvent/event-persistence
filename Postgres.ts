@@ -38,7 +38,7 @@ export async function setupPostgres() {
     console.log(query);
 }
 
-export async function writeToPostgres(requestfields: string[], data: any) {
+export async function writeToPostgres(data: any) {
     try {
         var row = [];
         console.log(fields)
