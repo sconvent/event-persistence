@@ -9,7 +9,7 @@ const httpTokenAuthEnabled = process.env.HTTP_TOKEN_AUTH_ENABLED == "true" || fa
 const httpTokenHeaderName = process.env.HTTP_TOKEN_HEADER_NAME || "X-Auth-Token"
 const httpTokenSecret = process.env.HTTP_TOKEN_SECRET || "secret"
 
-export async function setupHttp(handleEvent: any) {
+export async function setupHttp(inputFormat: string, handleEvent: any) {
 
     const app: Application = express();
     if(httpEnabled) {
@@ -18,7 +18,7 @@ export async function setupHttp(handleEvent: any) {
             console.log(`Server is listening on port ${httpPort}`);
         });
     
-        app.use(bodyParser.text({ type: 'application/json' }));
+        app.use(bodyParser.text({ type: `application/${inputFormat}` }));
     
         app.post(httpPath, async (req: Request, res: Response) => {
             // check token

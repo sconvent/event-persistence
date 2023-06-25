@@ -1,7 +1,7 @@
 import { setupMqtt } from './Mqtt.js';
 import { setupHttp } from './Http.js';
 import { setupPostgres, writeToPostgres } from './Postgres.js';
-import { parseString } from 'xml2js';
+import { parseString, parseStringPromise } from 'xml2js';
 
 const inputFormat = process.env.INPUT_FORMAT || "json"
 
@@ -13,12 +13,12 @@ const handleEvent = async (metaData: any, data: any) => {
         if (inputFormat == "json") {
             parsedData = JSON.parse(data);
         } else if (inputFormat == "xml") {
-            await parseString(data, (err: any, result: any) => {
-                if (err) {
-                    console.log(`Error parsing XML: ${err}`);
-                    return;
-                }
+            await parseStringPromise(data).then(function(result: any) {
                 parsedData = result;
+                console.log(JSON.stringify(parsedData));
+            }).catch(function(err: any) {
+                console.log(`Error parsing XML: ${err}`);
+                return;
             });
         } else if (inputFormat == "csv") {
             parsedData = data.split(",");
@@ -32,11 +32,13 @@ const handleEvent = async (metaData: any, data: any) => {
     }
 
     // write to postgres
-    writeToPostgres(parsedData);
+    if (parsedData) {
+        writeToPostgres(parsedData);
+    }
 }
 
 setupPostgres()
 
 setupMqtt(handleEvent)
 
-setupHttp(handleEvent)
+setupHttp(inputFormat, handleEvent)
