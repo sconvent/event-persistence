@@ -37,8 +37,15 @@ const handleEvent = async (metaData: any, data: any) => {
     }
 }
 
-setupPostgres()
+function setup() {
 
-setupMqtt(handleEvent)
+    setupPostgres()
 
-setupHttp(inputFormat, handleEvent)
+    setupMqtt(handleEvent)
+
+    setupHttp(inputFormat, handleEvent)
+}
+
+setup()
+
+export { setup }
