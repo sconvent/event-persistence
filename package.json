@@ -12,7 +12,7 @@
     "dev": "tsc && node index.js",
     "build": "tsc",
     "lint": "npx eslint . --ext .ts",
-    "test": "jest",
+    "test": "npx tsc && npx jest --config ./jest.config.ts",
     "prettier": "prettier --write ."
   },
   "dependencies": {

@@ -27,7 +27,7 @@ jobs:
       #- name: Run linting
       #  run: yarn lint
 
-      - name: Run linting
+      - name: Run test
         run: yarn test
 
       - name: Build
