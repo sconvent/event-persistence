@@ -48,4 +48,4 @@ function setup() {
 
 setup()
 
-export { setup }
+export { setup, handleEvent }
