@@ -9,7 +9,7 @@
   "moduleResolution": "Node16",
   "scripts": {
     "start": "node index.js",
-    "dev": "tsc && node index.js",
+    "dev": "tsc && node ./src/index.js",
     "build": "tsc",
     "lint": "npx eslint . --ext .ts",
     "test": "npx tsc && npx jest --config ./jest.config.ts",
