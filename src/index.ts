@@ -1,4 +1,5 @@
 import { setupMqtt } from './Mqtt.js';
+import { setupKafka } from './kafka.js';
 import { setupHttp } from './Http.js';
 import { setupPostgres, writeToPostgres } from './Postgres.js';
 import { parseString, parseStringPromise } from 'xml2js';
@@ -42,6 +43,8 @@ function setup() {
     setupPostgres()
 
     setupMqtt(handleEvent)
+
+    setupKafka(handleEvent)
 
     setupHttp(inputFormat, handleEvent)
 }
