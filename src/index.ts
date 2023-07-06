@@ -1,5 +1,6 @@
 import { setupMqtt } from './Mqtt.js';
 import { setupKafka } from './kafka.js';
+import { setupAmqp } from './amqp.js';
 import { setupHttp } from './Http.js';
 import { setupPostgres, writeToPostgres } from './Postgres.js';
 import { parseString, parseStringPromise } from 'xml2js';
