@@ -4,9 +4,6 @@ import { connect } from 'amqplib';
 const amqpEnabled = process.env.AMQP_ENABLED == "true" || false
 const amqpHost = process.env.AMQP_HOST || "localhost"
 const amqpPort = process.env.AMQP_PORT || 1883
-const amqpUser = process.env.AMQP_USER || undefined
-const amqpPassword = process.env.AMQP_PASSWORD || undefined
-const amqpTopics: string | undefined = process.env.AMQP_TOPICS || undefined
 const amqpQueueName = process.env.AMQP_QUEUE_NAME || "queue"
 
 export async function setupAmqp(handleEvent: any) {
