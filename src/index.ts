@@ -47,6 +47,8 @@ function setup() {
 
     setupKafka(handleEvent)
 
+    setupAmqp(handleEvent)
+
     setupHttp(inputFormat, handleEvent)
 }
 
