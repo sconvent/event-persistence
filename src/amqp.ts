@@ -16,6 +16,7 @@ export async function setupAmqp(handleEvent: any) {
         await channel.consume(amqpQueueName, (message: any) => {
             if (message !== null) {
                 console.log('Received message:', message.content.toString());
+                handleEvent(message.content.toString());
                 channel.ack(message);
             }
         });
