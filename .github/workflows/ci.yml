@@ -12,6 +12,21 @@ jobs:
   build:
     runs-on: ubuntu-22.04
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mydb
+        ports:
+          - 5432:5432
+
+      mosquitto:
+        image: eclipse-mosquitto
+        ports:
+          - 1883:1883
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -32,3 +47,5 @@ jobs:
 
       - name: Build
         run: yarn build
+      
+      # TODO: test against services
