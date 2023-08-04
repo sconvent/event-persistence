@@ -34,10 +34,26 @@ client.on("connect", () => {
 })
 
 // Postgres: Check if data was written
-pgClient.query(`SELECT * FROM data;`)
+await pgClient.query(`SELECT * FROM data;`)
     .then((res: any) => {
-        console.log("Systemtest: Data in Postgres:")
-        console.log(res.rows)
-    }
-    )
+        console.log("Systemtest: Checking")
+        if(res.rows.length == 0) {
+            console.log("Systemtest: No data found")
+            process.exit(1)
+        }
+        if(res.rows[0].testfield != "testValue") {
+            console.log("Systemtest: Data mismatch")
+            process.exit(1)
+        }
+    })
     .catch((err: any) => console.log(`Systemtest: Error getting data from Postgres: ${err}`));
+
+
+// Cleanup
+await pgClient.query(`DELETE FROM data;`)
+
+// Shutdown
+await pgClient.end()
+await client.end()
+
+process.exit(0)
