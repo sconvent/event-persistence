@@ -1,4 +1,5 @@
-import { Client } from 'pg';
+import pkg from 'pg';
+const { Client } = pkg;
 
 // Define all DB variables needed
 const dbHost = process.env.DB_HOST || "localhost"
