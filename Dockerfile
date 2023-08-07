@@ -20,4 +20,4 @@ RUN yarn build
 EXPOSE 8080
 
 # Set the command to run when the container starts
-CMD ["yarn", "start"]
+CMD ["node", "./src/index.js"]
