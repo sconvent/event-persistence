@@ -3,6 +3,12 @@
 
 A tool to persist events from various sources to various targets such as a database or file.
 
+## Usage
+The easiest way to use this tool is to use the docker image.
+Use the following command to run the tool:
+```bash
+docker run -d --rm -p 8080:8080 -e DB_HOST=<your_db_host> -e DB_USERNAME=<your_username> -e DB_PASSWORD=<your_db_password> event-persistence
+```
 ## Feature Description
 As this project just started, the features are not yet implemented and this is mostly a target description.
 
