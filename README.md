@@ -9,6 +9,24 @@ Use the following command to run the tool:
 ```bash
 docker run -d --rm -p 8080:8080 -e DB_HOST=<your_db_host> -e DB_USERNAME=<your_username> -e DB_PASSWORD=<your_db_password> event-persistence
 ```
+
+Alternatively you can use the following `docker-compose.yml` (or extend an existing one):
+```yaml
+version: '3'
+services:
+  event-persistence:
+    image: event-persistence:latest
+    container_name: event-persistence
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - HTTP_ENABLED=true
+      - DB_HOST=<your_db_host>
+      - DB_USERNAME=<your_username>
+      - DB_PASSWORD=<your_db_password>
+      - DB_TABLE=<your_db_table>
+```
 ## Feature Description
 As this project just started, the features are not yet implemented and this is mostly a target description.
 
